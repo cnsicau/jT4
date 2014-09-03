@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-(function (w) {
+(function (w, $) {
     if (w.jT4) return; /* already exists */
 
     function jT4Block(type, text) { this.type = type; this.text = text; };
@@ -132,5 +132,17 @@ THE SOFTWARE.
         return function (_) { return callback.call(_); }
     }
 
-    w.jT4 = new jT4();
-})(window);
+    var instance = new jT4();
+    
+    w.jT4 = function(template, context){
+      var render = instance.compile(template);
+      return context == undefined ? render : render(context);
+    };
+
+    w.jT4.Engine = instance;
+
+    // jQuery extension
+    if($ && !$.jT4){
+      $.fn.jT4 = function(context){ var el = $(this); return w.jT4(el.is(':input') ? el.val() : el.html(), context); }
+    }
+})(window, window.jQuery);
